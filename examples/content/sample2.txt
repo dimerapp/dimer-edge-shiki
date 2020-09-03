@@ -1,0 +1,9 @@
+import { loadTheme, getHighlighter } from 'shiki';
+
+async function highlight(code: string, language: string) {
+  const themePath = require.resolve('@pveyes/aperture/themes/Large-Aperture.json');
+  const theme = loadTheme(themePath);
+  const highlighter = await getHighlighter({ theme });
+  const tokens = highlighter.codeToThemedTokens(code, language);
+  return generateHTMLFromTokens(tokens);
+}

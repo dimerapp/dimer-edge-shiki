@@ -1,0 +1,11 @@
+const Markdown = require('@dimerapp/markdown')
+const markdown = new Markdown(contents)
+const tokens = await markdown.toJSON()
+console.log(tokens)
+
+/**
+ * {
+ * 	type: 'text',
+ * 	value: 'something'
+ * }
+ */
