@@ -1,7 +1,7 @@
 {
   "name": "dimer-edge-shiki",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.0.0",
+  "description": "A plugin for dimer edge to use shiki for rendering codeblocks",
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
     "pretest": "npm run lint",
@@ -18,7 +18,7 @@
     "sync-labels": "github-label-sync --labels ./node_modules/@adonisjs/mrm-preset/gh-labels.json dimerapp/dimer-edge-shiki"
   },
   "keywords": [],
-  "author": "",
+  "author": "virk",
   "license": "MIT",
   "devDependencies": {
     "@adonisjs/mrm-preset": "^2.4.0",
@@ -76,5 +76,17 @@
   "dependencies": {
     "parse-numeric-range": "^1.2.0",
     "shiki": "^0.2.2"
-  }
+  },
+  "directories": {
+    "example": "examples",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dimerapp/dimer-edge-shiki.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dimerapp/dimer-edge-shiki/issues"
+  },
+  "homepage": "https://github.com/dimerapp/dimer-edge-shiki#readme"
 }
