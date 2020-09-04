@@ -1,6 +1,6 @@
 {
   "name": "dimer-edge-shiki",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A plugin for dimer edge to use shiki for rendering codeblocks",
   "scripts": {
     "mrm": "mrm --preset=@adonisjs/mrm-preset",
