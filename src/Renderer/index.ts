@@ -163,6 +163,10 @@ export class ShikiRenderer {
 	public handleCodeBlocks = (renderer: Renderer, edge: EdgeContract) => {
 		edge.registerTemplate('dimer::shiki::pre', { template: '{{{code}}}' })
 		renderer.hook((node) => {
+			if (node.tag !== 'pre') {
+				return
+			}
+
 			const code = node.children.find((child) => child.type === 'element' && child.tag === 'code')
 			if (!code) {
 				return

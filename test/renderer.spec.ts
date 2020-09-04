@@ -98,4 +98,33 @@ test.group('ShikiRenderer', () => {
 		assert.isFalse(lines[4].startsWith(' highlight'))
 		assert.isTrue(lines[5].startsWith(' highlight'))
 	})
+
+	test('do not touch inline codeblock', async (assert) => {
+		/**
+		 * Setup edge
+		 */
+		const edge = new Edge()
+		edge.registerTemplate('guides', { template: '@dimerTree(doc.contents.children)~' })
+
+		/**
+		 * Setup renderer and shiki plugin
+		 */
+		const renderer = new Renderer(edge)
+		const shiki = new ShikiRenderer(__dirname)
+		renderer.use(shiki.handleCodeBlocks)
+
+		/**
+		 * Boot by loading themes and languages
+		 */
+		await shiki.boot()
+
+		const markdown = ['Hello `world`'].join('\n')
+
+		/**
+		 * Render
+		 */
+		const ast = await new Markdown(markdown).toJSON()
+		const html = edge.render('guides', { doc: ast })
+		assert.equal(html, '<p>Hello <code>world</code></p>')
+	})
 })
