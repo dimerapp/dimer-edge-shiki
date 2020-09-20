@@ -158,7 +158,7 @@ export class ShikiRenderer {
 				`<div class="line"><span style="color: ${this.themeToUse.fg}">${this.escapeHtml(
 					code
 				)}</span></div>`,
-				'text',
+				'text'
 			)
 		}
 

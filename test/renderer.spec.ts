@@ -187,11 +187,7 @@ test.group('ShikiRenderer', () => {
 		 */
 		await shiki.boot()
 
-		const markdown = [
-			'```edge',
-			'{{ username }}',
-			'```',
-		].join('\n')
+		const markdown = ['```edge', '{{ username }}', '```'].join('\n')
 
 		/**
 		 * Render
