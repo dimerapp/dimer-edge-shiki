@@ -51,7 +51,7 @@ test.group('ShikiRenderer', () => {
 		const ast = await new Markdown(markdown).toJSON()
 		const html = edge.render('guides', { doc: ast })
 
-		assert.isTrue(html.includes('<pre class="dimer-edge-shiki"'))
+		assert.isTrue(html.includes('<pre class="dimer-edge-shiki language-js"'))
 	})
 
 	test('highlight mentioned line ranges', async (assert) => {
@@ -126,5 +126,79 @@ test.group('ShikiRenderer', () => {
 		const ast = await new Markdown(markdown).toJSON()
 		const html = edge.render('guides', { doc: ast })
 		assert.equal(html, '<p>Hello <code>world</code></p>')
+	})
+
+	test('ignore plain text codeblocks', async (assert) => {
+		/**
+		 * Setup edge
+		 */
+		const edge = new Edge()
+		edge.registerTemplate('guides', { template: '@dimerTree(doc.contents.children)~' })
+
+		/**
+		 * Setup renderer and shiki plugin
+		 */
+		const renderer = new Renderer(edge)
+		const shiki = new ShikiRenderer(__dirname)
+		renderer.use(shiki.handleCodeBlocks)
+
+		/**
+		 * Boot by loading themes and languages
+		 */
+		await shiki.boot()
+
+		const markdown = [
+			'```text',
+			`const Markdown = require('@dimerapp/markdown')`,
+			`const markdown = new Markdown(contents)`,
+			`const tokens = await markdown.toJSON()`,
+			`console.log(tokens)`,
+			`/**`,
+			`* { type: 'text', value: 'something' }`,
+			`*/`,
+			'```',
+		].join('\n')
+
+		/**
+		 * Render
+		 */
+		const ast = await new Markdown(markdown).toJSON()
+		const html = edge.render('guides', { doc: ast })
+
+		assert.isTrue(html.includes('<pre class="dimer-edge-shiki language-text"'))
+	})
+
+	test('ignore codeblocks for un-registered languages', async (assert) => {
+		/**
+		 * Setup edge
+		 */
+		const edge = new Edge()
+		edge.registerTemplate('guides', { template: '@dimerTree(doc.contents.children)~' })
+
+		/**
+		 * Setup renderer and shiki plugin
+		 */
+		const renderer = new Renderer(edge)
+		const shiki = new ShikiRenderer(__dirname)
+		renderer.use(shiki.handleCodeBlocks)
+
+		/**
+		 * Boot by loading themes and languages
+		 */
+		await shiki.boot()
+
+		const markdown = [
+			'```edge',
+			'{{ username }}',
+			'```',
+		].join('\n')
+
+		/**
+		 * Render
+		 */
+		const ast = await new Markdown(markdown).toJSON()
+		const html = edge.render('guides', { doc: ast })
+
+		assert.isTrue(html.includes('<pre class="dimer-edge-shiki language-text"'))
 	})
 })

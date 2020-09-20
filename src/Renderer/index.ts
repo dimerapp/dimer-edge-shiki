@@ -13,7 +13,7 @@ import rangeParser from 'parse-numeric-range'
 import { Theme, IShikiTheme } from 'shiki-themes'
 import { Renderer, utils, component } from 'dimer-edge'
 import { ILanguageRegistration } from 'shiki-languages'
-import { getHighlighter, loadTheme, getTheme } from 'shiki'
+import { getHighlighter, loadTheme, getTheme, BUNDLED_LANGUAGES } from 'shiki'
 
 type UnWrapPromise<T> = T extends PromiseLike<infer R> ? R : T
 
@@ -37,13 +37,33 @@ export class ShikiRenderer {
 	private shikiLanguages: ILanguageRegistration[] = []
 	private highlighter?: UnWrapPromise<ReturnType<typeof getHighlighter>>
 
-	constructor(private basePath: string) {}
+	/**
+	 * An object of registered languages. We create the object since the array can be
+	 * quite big and looping over all the items will take time.
+	 */
+	private registeredLanguagesIds = {}
+
+	constructor(private basePath: string) {
+		BUNDLED_LANGUAGES.forEach((lang) => this.registerLanguage(lang))
+	}
+
+	/**
+	 * Register the language id and aliases
+	 */
+	private registerLanguage(language: ILanguageRegistration) {
+		this.registeredLanguagesIds[language.id] = true
+		if (language.aliases) {
+			language.aliases.forEach((alias) => {
+				this.registeredLanguagesIds[alias] = true
+			})
+		}
+	}
 
 	/**
 	 * Wraps code inside pre tag
 	 */
-	private wrapToPre(code: string) {
-		return `<pre class="dimer-edge-shiki" style="background-color: ${this.themeToUse.bg}"><code>${code}</code></pre>`
+	private wrapToPre(code: string, lang: string) {
+		return `<pre class="dimer-edge-shiki language-${lang}" style="background-color: ${this.themeToUse.bg}"><code>${code}</code></pre>`
 	}
 
 	/**
@@ -94,6 +114,7 @@ export class ShikiRenderer {
 	public loadLanguage(language: ILanguageRegistration): this {
 		language.path = join(this.basePath, language.path)
 		this.shikiLanguages.push(language)
+		this.registerLanguage(language)
 		return this
 	}
 
@@ -122,6 +143,13 @@ export class ShikiRenderer {
 		language = language || 'text'
 
 		/**
+		 * Render as text when language is not registered
+		 */
+		if (!this.registeredLanguagesIds[language]) {
+			language = 'text'
+		}
+
+		/**
 		 * Plain text languages cannot be tokenized and hence we have
 		 * to render them as it is
 		 */
@@ -129,7 +157,8 @@ export class ShikiRenderer {
 			return this.wrapToPre(
 				`<div class="line"><span style="color: ${this.themeToUse.fg}">${this.escapeHtml(
 					code
-				)}</span></div>`
+				)}</span></div>`,
+				'text',
 			)
 		}
 
@@ -154,7 +183,7 @@ export class ShikiRenderer {
 			html += `</div>`
 		})
 
-		return this.wrapToPre(html)
+		return this.wrapToPre(html, language)
 	}
 
 	/**
